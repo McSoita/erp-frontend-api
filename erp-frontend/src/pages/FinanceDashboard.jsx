@@ -745,7 +745,7 @@ function FinanceDashboard() {
                             setSelectedAccount(account)
                             setIsAccountStatusModalOpen(true)
                           }}
-                          className="rounded-full bg-slate-100 px-5 py-2 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-200"
+                          className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-5 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
                         >
                           {account.is_active ? 'Deactivate' : 'Activate'}
                         </button>
@@ -854,7 +854,7 @@ function FinanceDashboard() {
                             setSelectedJournalEntry(entry)
                             setIsJournalDetailsModalOpen(true)
                           }}
-                          className="rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-200"
+                          className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
                         >
                           View Entry
                         </button>
@@ -1395,7 +1395,7 @@ function FinanceDashboard() {
                             setSelectedAsset(asset)
                             setIsAssetStatusModalOpen(true)
                           }}
-                          className="rounded-full bg-slate-100 px-5 py-2 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-200"
+                          className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-5 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
                         >
                           Update Status
                         </button>
@@ -1752,10 +1752,10 @@ function FinanceDashboard() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all ${
+                className={`rounded-full border px-5 py-2.5 text-sm font-semibold backdrop-blur-md transition-all duration-300 ease-in-out ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
-                    : 'text-slate-500 hover:bg-slate-100'
+                    ? 'cursor-pointer border-blue-200/80 bg-blue-100/85 text-blue-950 shadow-[inset_1px_1px_0_rgba(255,255,255,0.88),0_12px_28px_rgba(59,130,246,0.18)] hover:-translate-y-1 hover:bg-blue-200/85 hover:shadow-md'
+                    : 'cursor-pointer border-white/60 bg-slate-100/70 text-slate-600 shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_12px_28px_rgba(15,23,42,0.08)] hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-800 hover:shadow-md'
                 }`}
               >
                 {tab.label}

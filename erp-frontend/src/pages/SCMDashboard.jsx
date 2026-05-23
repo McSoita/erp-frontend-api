@@ -396,7 +396,7 @@ function SCMDashboard() {
                           setSelectedPO(po)
                           setIsPOStatusModalOpen(true)
                         }}
-                        className="inline-flex items-center justify-center rounded-full bg-slate-100 px-4 py-2 font-semibold text-slate-700 transition-all hover:bg-slate-200"
+                        className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
                       >
                         Update Status
                       </button>
@@ -520,7 +520,7 @@ function SCMDashboard() {
                             setSelectedVendor(vendor)
                             setIsVendorStatusModalOpen(true)
                           }}
-                          className="inline-flex items-center justify-center rounded-full bg-slate-100 px-4 py-2 font-semibold text-slate-700 transition-all hover:bg-slate-200"
+                          className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
                         >
                           Update Status
                         </button>
@@ -580,7 +580,7 @@ function SCMDashboard() {
           {items.map((shipment) => (
             <div
               key={shipment.id}
-              className="flex flex-col gap-3 rounded-3xl bg-slate-50 p-5 shadow-[inset_1px_1px_0_rgba(255,255,255,0.85),0_10px_24px_rgba(15,23,42,0.04)] sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-3 rounded-3xl border border-white/50 bg-blue-50/60 p-5 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.82),0_12px_28px_rgba(59,130,246,0.08)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/75 hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
                 <p className="text-base font-semibold text-slate-900">
@@ -604,7 +604,7 @@ function SCMDashboard() {
                     setIsShipmentModalOpen(true)
                   }
                 }}
-                className={`inline-flex cursor-pointer self-start rounded-full px-3 py-1 text-sm font-medium transition-all hover:opacity-80 ${getStatusBadgeClassName(
+                className={`inline-flex cursor-pointer self-start rounded-full border border-white/60 px-3 py-1 text-sm font-medium backdrop-blur-md transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-md ${getStatusBadgeClassName(
                   shipment.status,
                 )}`}
               >
@@ -792,10 +792,10 @@ function SCMDashboard() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all ${
+                className={`rounded-full border px-5 py-2.5 text-sm font-semibold backdrop-blur-md transition-all duration-300 ease-in-out ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
-                    : 'bg-slate-100 text-slate-500 shadow-[inset_1px_1px_0_rgba(255,255,255,0.9),0_10px_24px_rgba(15,23,42,0.05)] hover:bg-white hover:text-slate-700'
+                    ? 'cursor-pointer border-blue-200/80 bg-blue-100/85 text-blue-950 shadow-[inset_1px_1px_0_rgba(255,255,255,0.88),0_12px_28px_rgba(59,130,246,0.18)] hover:-translate-y-1 hover:bg-blue-200/85 hover:shadow-md'
+                    : 'cursor-pointer border-white/60 bg-slate-100/70 text-slate-600 shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_12px_28px_rgba(15,23,42,0.08)] hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-800 hover:shadow-md'
                 }`}
               >
                 {tab.label}

@@ -324,7 +324,7 @@ function BIDashboard() {
           {reportModules.map((moduleName) => (
             <div
               key={moduleName}
-              className="flex flex-col gap-4 rounded-[1.75rem] bg-slate-50 p-5 shadow-[inset_1px_1px_0_rgba(255,255,255,0.9),0_12px_24px_rgba(15,23,42,0.04)] sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-4 rounded-[1.75rem] border border-white/50 bg-blue-50/60 p-5 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.82),0_12px_28px_rgba(59,130,246,0.08)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/75 hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
                 <p className="text-lg font-semibold text-slate-900">{moduleName}</p>
@@ -337,7 +337,7 @@ function BIDashboard() {
                 type="button"
                 onClick={() => handleExportCsv(moduleName)}
                 disabled={exportingModule === moduleName.toLowerCase()}
-                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+                className="inline-flex cursor-pointer items-center justify-center rounded-full border border-blue-200/80 bg-blue-100/85 px-6 py-2.5 text-sm font-semibold text-blue-950 backdrop-blur-md transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-200/85 hover:shadow-md"
               >
                 {exportingModule === moduleName.toLowerCase() ? 'Exporting...' : 'Export CSV'}
               </button>
@@ -468,10 +468,10 @@ function BIDashboard() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all ${
+                className={`rounded-full border px-5 py-2.5 text-sm font-semibold backdrop-blur-md transition-all duration-300 ease-in-out ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
-                    : 'bg-slate-100 text-slate-500 shadow-[inset_1px_1px_0_rgba(255,255,255,0.9),0_10px_24px_rgba(15,23,42,0.05)] hover:bg-white hover:text-slate-700'
+                    ? 'cursor-pointer border-blue-200/80 bg-blue-100/85 text-blue-950 shadow-[inset_1px_1px_0_rgba(255,255,255,0.88),0_12px_28px_rgba(59,130,246,0.18)] hover:-translate-y-1 hover:bg-blue-200/85 hover:shadow-md'
+                    : 'cursor-pointer border-white/60 bg-slate-100/70 text-slate-600 shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_12px_28px_rgba(15,23,42,0.08)] hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-800 hover:shadow-md'
                 }`}
               >
                 {tab.label}
