@@ -9,6 +9,8 @@ import NewPricingRuleModal from '../components/NewPricingRuleModal'
 import NewQuotationModal from '../components/NewQuotationModal'
 import UpdateOpportunityStageModal from '../components/UpdateOpportunityStageModal'
 import UpdateQuotationStatusModal from '../components/UpdateQuotationStatusModal'
+import { useAuth } from '../context/AuthContext'
+import { canWrite } from '../utils/permissions'
 
 const crmTabs = [
   { id: 'pipeline', label: 'Sales Pipeline' },
@@ -136,6 +138,7 @@ function getPricingRuleBadgeClassName(isActive) {
 }
 
 function CRMDashboard() {
+  const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('pipeline')
   const [opportunities, setOpportunities] = useState([])
   const [customers, setCustomers] = useState([])
@@ -158,6 +161,7 @@ function CRMDashboard() {
   const [selectedPricingRule, setSelectedPricingRule] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const canManageCrm = canWrite(user, 'CRM')
 
   const fetchOpportunities = useCallback(async () => {
     const response = await apiClient.get('/crm/opportunities')
@@ -424,13 +428,15 @@ function CRMDashboard() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsOpportunityModalOpen(true)}
-            className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/30 transition-all hover:bg-blue-700"
-          >
-            New Opportunity
-          </button>
+          {canManageCrm ? (
+            <button
+              type="button"
+              onClick={() => setIsOpportunityModalOpen(true)}
+              className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/30 transition-all hover:bg-blue-700"
+            >
+              New Opportunity
+            </button>
+          ) : null}
         </div>
 
         <div className="mt-8 grid gap-6 2xl:grid-cols-6 xl:grid-cols-3">
@@ -468,16 +474,18 @@ function CRMDashboard() {
                       <p className="mt-4 text-lg font-semibold text-blue-600">
                         {formatCurrency(opportunity.estimated_value)}
                       </p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedOpportunity(opportunity)
-                          setIsOpportunityStageModalOpen(true)
-                        }}
-                        className="mt-4 cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                      >
-                        Update Stage
-                      </button>
+                      {canManageCrm ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedOpportunity(opportunity)
+                            setIsOpportunityStageModalOpen(true)
+                          }}
+                          className="mt-4 cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                        >
+                          Update Stage
+                        </button>
+                      ) : null}
                     </article>
                   ))}
 
@@ -518,13 +526,15 @@ function CRMDashboard() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsNewCustomerModalOpen(true)}
-            className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/30 transition-all hover:bg-blue-700"
-          >
-            New Customer
-          </button>
+          {canManageCrm ? (
+            <button
+              type="button"
+              onClick={() => setIsNewCustomerModalOpen(true)}
+              className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/30 transition-all hover:bg-blue-700"
+            >
+              New Customer
+            </button>
+          ) : null}
         </div>
 
         <div className="overflow-x-auto">
@@ -581,16 +591,18 @@ function CRMDashboard() {
                       >
                         View Record
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedCustomer(customer)
-                          setIsEditCustomerModalOpen(true)
-                        }}
-                        className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-5 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                      >
-                        Edit
-                      </button>
+                      {canManageCrm ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedCustomer(customer)
+                            setIsEditCustomerModalOpen(true)
+                          }}
+                          className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-5 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                        >
+                          Edit
+                        </button>
+                      ) : null}
                     </div>
                   </td>
                 </tr>
@@ -636,13 +648,15 @@ function CRMDashboard() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsQuotationModalOpen(true)}
-            className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/30 transition-all hover:bg-blue-700"
-          >
-            New Quotation
-          </button>
+          {canManageCrm ? (
+            <button
+              type="button"
+              onClick={() => setIsQuotationModalOpen(true)}
+              className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/30 transition-all hover:bg-blue-700"
+            >
+              New Quotation
+            </button>
+          ) : null}
         </div>
 
         <div className="overflow-x-auto">
@@ -694,16 +708,18 @@ function CRMDashboard() {
                     </span>
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-sm">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedQuotation(quotation)
-                        setIsQuotationStatusModalOpen(true)
-                      }}
-                      className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-5 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                    >
-                      Update Status
-                    </button>
+                    {canManageCrm ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedQuotation(quotation)
+                          setIsQuotationStatusModalOpen(true)
+                        }}
+                        className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-5 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                      >
+                        Update Status
+                      </button>
+                    ) : null}
                   </td>
                 </tr>
               ))}
@@ -749,13 +765,15 @@ function CRMDashboard() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsPricingModalOpen(true)}
-            className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/30 transition-all hover:bg-blue-700"
-          >
-            New Pricing Rule
-          </button>
+          {canManageCrm ? (
+            <button
+              type="button"
+              onClick={() => setIsPricingModalOpen(true)}
+              className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/30 transition-all hover:bg-blue-700"
+            >
+              New Pricing Rule
+            </button>
+          ) : null}
         </div>
 
         <div className="overflow-x-auto">
@@ -807,16 +825,18 @@ function CRMDashboard() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedPricingRule(rule)
-                        setIsEditPricingModalOpen(true)
-                      }}
-                      className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-5 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                    >
-                      Edit Rule
-                    </button>
+                    {canManageCrm ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedPricingRule(rule)
+                          setIsEditPricingModalOpen(true)
+                        }}
+                        className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-5 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                      >
+                        Edit Rule
+                      </button>
+                    ) : null}
                   </td>
                 </tr>
               ))}

@@ -11,10 +11,17 @@ import InventoryDashboard from './pages/InventoryDashboard'
 import Login from './pages/Login'
 import SCMDashboard from './pages/SCMDashboard'
 import SalesDashboard from './pages/SalesDashboard'
+import { hasModuleAccess } from './utils/permissions'
 
 function AppRoutes() {
   const { user } = useAuth()
-  const isSuperAdmin = Number(user?.role_id) === 1
+  const canAccessFinance = hasModuleAccess(user, 'Finance')
+  const canAccessBi = hasModuleAccess(user, 'BI')
+  const canAccessCrm = hasModuleAccess(user, 'CRM')
+  const canAccessInventory = hasModuleAccess(user, 'Inventory')
+  const canAccessScm = hasModuleAccess(user, 'SCM')
+  const canAccessSales = hasModuleAccess(user, 'Sales Orders')
+  const canAccessHr = hasModuleAccess(user, 'HR')
 
   return (
     <Routes>
@@ -25,21 +32,35 @@ function AppRoutes() {
           <Route
             path="/finance"
             element={
-              isSuperAdmin ? <FinanceDashboard /> : <Navigate to="/" replace />
+              canAccessFinance ? <FinanceDashboard /> : <Navigate to="/" replace />
             }
           />
           <Route
             path="/bi"
-            element={isSuperAdmin ? <BIDashboard /> : <Navigate to="/" replace />}
+            element={canAccessBi ? <BIDashboard /> : <Navigate to="/" replace />}
           />
-          <Route path="/crm" element={<CRMDashboard />} />
-          <Route path="/inventory" element={<InventoryDashboard />} />
+          <Route
+            path="/crm"
+            element={canAccessCrm ? <CRMDashboard /> : <Navigate to="/" replace />}
+          />
+          <Route
+            path="/inventory"
+            element={
+              canAccessInventory ? <InventoryDashboard /> : <Navigate to="/" replace />
+            }
+          />
           <Route
             path="/hr"
-            element={isSuperAdmin ? <HRDashboard /> : <Navigate to="/" replace />}
+            element={canAccessHr ? <HRDashboard /> : <Navigate to="/" replace />}
           />
-          <Route path="/scm" element={<SCMDashboard />} />
-          <Route path="/sales" element={<SalesDashboard />} />
+          <Route
+            path="/scm"
+            element={canAccessScm ? <SCMDashboard /> : <Navigate to="/" replace />}
+          />
+          <Route
+            path="/sales"
+            element={canAccessSales ? <SalesDashboard /> : <Navigate to="/" replace />}
+          />
         </Route>
       </Route>
     </Routes>

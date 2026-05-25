@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import apiClient from '../api/client'
+import { ROLE_OPTIONS } from '../utils/permissions'
 
 const initialFormData = {
   username: '',
@@ -10,7 +11,7 @@ const initialFormData = {
   department: '',
   job_title: '',
   hire_date: '',
-  role_id: '2',
+  role: 'Junior sales',
 }
 const fieldClassName =
   'w-full rounded-2xl border border-transparent bg-slate-50 px-4 py-3 text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200'
@@ -59,7 +60,7 @@ function RegisterEmployeeModal({ isOpen, onClose, onSuccess }) {
       last_name: formData.last_name.trim(),
       email: formData.email.trim(),
       hire_date: formData.hire_date,
-      role_id: parseInt(formData.role_id, 10),
+      role: formData.role,
       job_title: formData.job_title.trim() || undefined,
       department_id: formData.department
         ? parseInt(formData.department, 10)
@@ -264,21 +265,24 @@ function RegisterEmployeeModal({ isOpen, onClose, onSuccess }) {
 
             <div className="md:col-span-2">
               <label
-                htmlFor="role_id"
+                htmlFor="role"
                 className="mb-2 block text-sm font-medium text-slate-700"
               >
                 Role
               </label>
               <select
-                id="role_id"
-                name="role_id"
-                value={formData.role_id}
+                id="role"
+                name="role"
+                value={formData.role}
                 onChange={handleChange}
                 required
                 className={fieldClassName}
               >
-                <option value="1">Admin</option>
-                <option value="2">Standard/Sales</option>
+                {ROLE_OPTIONS.map((roleName) => (
+                  <option key={roleName} value={roleName}>
+                    {roleName}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

@@ -15,6 +15,8 @@ import NewVendorModal from '../components/NewVendorModal'
 import UpdatePOStatusModal from '../components/UpdatePOStatusModal'
 import UpdateShipmentModal from '../components/UpdateShipmentModal'
 import UpdateVendorStatusModal from '../components/UpdateVendorStatusModal'
+import { useAuth } from '../context/AuthContext'
+import { canWrite } from '../utils/permissions'
 
 const scmTabs = [
   { id: 'pos', label: 'Purchase Orders' },
@@ -85,6 +87,7 @@ function getStatusBadgeClassName(status) {
 }
 
 function SCMDashboard() {
+  const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('pos')
   const [pos, setPOs] = useState([])
   const [vendors, setVendors] = useState([])
@@ -102,6 +105,7 @@ function SCMDashboard() {
   const [selectedShipment, setSelectedShipment] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const canManageScm = canWrite(user, 'SCM')
 
   const fetchPOs = useCallback(async () => {
     const response = await apiClient.get('/scm/purchase-orders')
@@ -325,13 +329,15 @@ function SCMDashboard() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsPOModalOpen(true)}
-            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-          >
-            New PO
-          </button>
+          {canManageScm ? (
+            <button
+              type="button"
+              onClick={() => setIsPOModalOpen(true)}
+              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+            >
+              New PO
+            </button>
+          ) : null}
         </div>
 
         <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
@@ -390,16 +396,18 @@ function SCMDashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedPO(po)
-                          setIsPOStatusModalOpen(true)
-                        }}
-                        className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                      >
-                        Update Status
-                      </button>
+                      {canManageScm ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedPO(po)
+                            setIsPOStatusModalOpen(true)
+                          }}
+                          className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                        >
+                          Update Status
+                        </button>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
@@ -450,13 +458,15 @@ function SCMDashboard() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsVendorModalOpen(true)}
-            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-          >
-            New Vendor
-          </button>
+          {canManageScm ? (
+            <button
+              type="button"
+              onClick={() => setIsVendorModalOpen(true)}
+              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+            >
+              New Vendor
+            </button>
+          ) : null}
         </div>
 
         <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
@@ -503,28 +513,30 @@ function SCMDashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedVendor(vendor)
-                            setIsVendorEditModalOpen(true)
-                          }}
-                          className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-2 font-semibold text-white transition-all hover:bg-blue-700"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedVendor(vendor)
-                            setIsVendorStatusModalOpen(true)
-                          }}
-                          className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                        >
-                          Update Status
-                        </button>
-                      </div>
+                      {canManageScm ? (
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedVendor(vendor)
+                              setIsVendorEditModalOpen(true)
+                            }}
+                            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-2 font-semibold text-white transition-all hover:bg-blue-700"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedVendor(vendor)
+                              setIsVendorStatusModalOpen(true)
+                            }}
+                            className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                          >
+                            Update Status
+                          </button>
+                        </div>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
@@ -590,26 +602,36 @@ function SCMDashboard() {
                   ETA {formatDate(shipment.estimated_arrival)}
                 </p>
               </div>
-              <span
-                role="button"
-                tabIndex={0}
-                onClick={() => {
-                  setSelectedShipment(shipment)
-                  setIsShipmentModalOpen(true)
-                }}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault()
+              {canManageScm ? (
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => {
                     setSelectedShipment(shipment)
                     setIsShipmentModalOpen(true)
-                  }
-                }}
-                className={`inline-flex cursor-pointer self-start rounded-full border border-white/60 px-3 py-1 text-sm font-medium backdrop-blur-md transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-md ${getStatusBadgeClassName(
-                  shipment.status,
-                )}`}
-              >
-                {shipment.status ?? 'Unknown'}
-              </span>
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      setSelectedShipment(shipment)
+                      setIsShipmentModalOpen(true)
+                    }
+                  }}
+                  className={`inline-flex cursor-pointer self-start rounded-full border border-white/60 px-3 py-1 text-sm font-medium backdrop-blur-md transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-md ${getStatusBadgeClassName(
+                    shipment.status,
+                  )}`}
+                >
+                  {shipment.status ?? 'Unknown'}
+                </span>
+              ) : (
+                <span
+                  className={`inline-flex self-start rounded-full border border-white/60 px-3 py-1 text-sm font-medium backdrop-blur-md ${getStatusBadgeClassName(
+                    shipment.status,
+                  )}`}
+                >
+                  {shipment.status ?? 'Unknown'}
+                </span>
+              )}
             </div>
           ))}
         </div>

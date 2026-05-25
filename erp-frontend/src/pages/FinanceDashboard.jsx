@@ -23,6 +23,8 @@ import JournalEntryDetailsModal from '../components/JournalEntryDetailsModal'
 import RecordPaymentModal from '../components/RecordPaymentModal'
 import RecordBillPaymentModal from '../components/RecordBillPaymentModal'
 import RecordTaxPaymentModal from '../components/RecordTaxPaymentModal'
+import { useAuth } from '../context/AuthContext'
+import { canWrite } from '../utils/permissions'
 import ReverseJournalEntryModal from '../components/ReverseJournalEntryModal'
 import UpdateAccountStatusModal from '../components/UpdateAccountStatusModal'
 import UpdateAssetStatusModal from '../components/UpdateAssetStatusModal'
@@ -150,6 +152,7 @@ function getAssetStatusBadgeClassName(status) {
 }
 
 function FinanceDashboard() {
+  const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('chart_of_accounts')
   const [accounts, setAccounts] = useState([])
   const [bills, setBills] = useState([])
@@ -189,6 +192,7 @@ function FinanceDashboard() {
   const [taxDataLoaded, setTaxDataLoaded] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const canManageFinance = canWrite(user, 'Finance')
 
   const fetchAccounts = useCallback(async () => {
     const response = await apiClient.get('/finance/accounts')
@@ -666,13 +670,15 @@ function FinanceDashboard() {
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setIsAccountModalOpen(true)}
-              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-            >
-              New Account
-            </button>
+            {canManageFinance ? (
+              <button
+                type="button"
+                onClick={() => setIsAccountModalOpen(true)}
+                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+              >
+                New Account
+              </button>
+            ) : null}
           </div>
         </div>
 
@@ -728,28 +734,30 @@ function FinanceDashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedAccount(account)
-                            setIsAccountEditModalOpen(true)
-                          }}
-                          className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedAccount(account)
-                            setIsAccountStatusModalOpen(true)
-                          }}
-                          className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-5 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                        >
-                          {account.is_active ? 'Deactivate' : 'Activate'}
-                        </button>
-                      </div>
+                      {canManageFinance ? (
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedAccount(account)
+                              setIsAccountEditModalOpen(true)
+                            }}
+                            className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedAccount(account)
+                              setIsAccountStatusModalOpen(true)
+                            }}
+                            className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-5 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                          >
+                            {account.is_active ? 'Deactivate' : 'Activate'}
+                          </button>
+                        </div>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
@@ -800,13 +808,15 @@ function FinanceDashboard() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsJournalModalOpen(true)}
-            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-          >
-            New Journal Entry
-          </button>
+          {canManageFinance ? (
+            <button
+              type="button"
+              onClick={() => setIsJournalModalOpen(true)}
+              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+            >
+              New Journal Entry
+            </button>
+          ) : null}
         </div>
 
         <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
@@ -859,16 +869,18 @@ function FinanceDashboard() {
                           View Entry
                         </button>
                         {String(entry.reference_type ?? '').toLowerCase() !== 'journalreversal' ? (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSelectedJournalEntry(entry)
-                              setIsReverseJournalModalOpen(true)
-                            }}
-                            className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-                          >
-                            Reverse Entry
-                          </button>
+                          canManageFinance ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedJournalEntry(entry)
+                                setIsReverseJournalModalOpen(true)
+                              }}
+                              className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+                            >
+                              Reverse Entry
+                            </button>
+                          ) : null
                         ) : (
                           <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-2 text-sm text-slate-500">
                             Reversal
@@ -934,13 +946,15 @@ function FinanceDashboard() {
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setIsBudgetModalOpen(true)}
-              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-            >
-              Add Budget
-            </button>
+            {canManageFinance ? (
+              <button
+                type="button"
+                onClick={() => setIsBudgetModalOpen(true)}
+                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+              >
+                Add Budget
+              </button>
+            ) : null}
           </div>
         </div>
 
@@ -1082,16 +1096,18 @@ function FinanceDashboard() {
                       {formatCurrency(budget.spent_amount)}
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedBudget(budget)
-                          setIsBudgetEditModalOpen(true)
-                        }}
-                        className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-                      >
-                        Edit Budget
-                      </button>
+                      {canManageFinance ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedBudget(budget)
+                            setIsBudgetEditModalOpen(true)
+                          }}
+                          className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+                        >
+                          Edit Budget
+                        </button>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
@@ -1179,13 +1195,15 @@ function FinanceDashboard() {
               </h3>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setIsTaxModalOpen(true)}
-              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-            >
-              Record Tax Payment
-            </button>
+            {canManageFinance ? (
+              <button
+                type="button"
+                onClick={() => setIsTaxModalOpen(true)}
+                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+              >
+                Record Tax Payment
+              </button>
+            ) : null}
           </div>
 
           <div className="overflow-x-auto">
@@ -1281,13 +1299,15 @@ function FinanceDashboard() {
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setIsAssetModalOpen(true)}
-              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-            >
-              Add Asset
-            </button>
+            {canManageFinance ? (
+              <button
+                type="button"
+                onClick={() => setIsAssetModalOpen(true)}
+                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+              >
+                Add Asset
+              </button>
+            ) : null}
           </div>
         </div>
 
@@ -1378,28 +1398,30 @@ function FinanceDashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedAsset(asset)
-                            setIsAssetEditModalOpen(true)
-                          }}
-                          className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedAsset(asset)
-                            setIsAssetStatusModalOpen(true)
-                          }}
-                          className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-5 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                        >
-                          Update Status
-                        </button>
-                      </div>
+                      {canManageFinance ? (
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedAsset(asset)
+                              setIsAssetEditModalOpen(true)
+                            }}
+                            className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedAsset(asset)
+                              setIsAssetStatusModalOpen(true)
+                            }}
+                            className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-5 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                          >
+                            Update Status
+                          </button>
+                        </div>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
@@ -1457,13 +1479,15 @@ function FinanceDashboard() {
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setIsBillModalOpen(true)}
-              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-            >
-              New Bill
-            </button>
+            {canManageFinance ? (
+              <button
+                type="button"
+                onClick={() => setIsBillModalOpen(true)}
+                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+              >
+                New Bill
+              </button>
+            ) : null}
           </div>
         </div>
 
@@ -1529,16 +1553,18 @@ function FinanceDashboard() {
                     </td>
                     <td className="px-6 py-4 text-sm">
                       {String(bill.status ?? '').toLowerCase() !== 'paid' ? (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedBill(bill)
-                            setIsBillPaymentModalOpen(true)
-                          }}
-                          className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition-all hover:bg-blue-700"
-                        >
-                          Record Payment
-                        </button>
+                        canManageFinance ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedBill(bill)
+                              setIsBillPaymentModalOpen(true)
+                            }}
+                            className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition-all hover:bg-blue-700"
+                          >
+                            Record Payment
+                          </button>
+                        ) : null
                       ) : (
                         <span className="text-sm text-slate-400">Settled</span>
                       )}
@@ -1599,13 +1625,15 @@ function FinanceDashboard() {
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setIsInvoiceModalOpen(true)}
-              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-            >
-              Create Invoice
-            </button>
+            {canManageFinance ? (
+              <button
+                type="button"
+                onClick={() => setIsInvoiceModalOpen(true)}
+                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+              >
+                Create Invoice
+              </button>
+            ) : null}
           </div>
         </div>
 
@@ -1671,16 +1699,18 @@ function FinanceDashboard() {
                     </td>
                     <td className="px-6 py-4 text-sm">
                       {String(invoice.status ?? '').toLowerCase() !== 'paid' ? (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedInvoice(invoice)
-                            setIsPaymentModalOpen(true)
-                          }}
-                          className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition-all hover:bg-blue-700"
-                        >
-                          Record Payment
-                        </button>
+                        canManageFinance ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedInvoice(invoice)
+                              setIsPaymentModalOpen(true)
+                            }}
+                            className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition-all hover:bg-blue-700"
+                          >
+                            Record Payment
+                          </button>
+                        ) : null
                       ) : (
                         <span className="text-sm text-slate-400">Settled</span>
                       )}

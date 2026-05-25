@@ -9,6 +9,8 @@ import {
   YAxis,
 } from 'recharts'
 import apiClient from '../api/client'
+import { useAuth } from '../context/AuthContext'
+import { canWrite } from '../utils/permissions'
 
 const biTabs = [
   { id: 'executive', label: 'Executive Overview' },
@@ -57,6 +59,7 @@ function getUserName(log) {
 }
 
 function BIDashboard() {
+  const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('executive')
   const [kpis, setKpis] = useState({
     totalRevenue: 0,
@@ -68,6 +71,7 @@ function BIDashboard() {
   const [exportingModule, setExportingModule] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const canManageBi = canWrite(user, 'BI')
 
   const fetchKPIs = useCallback(async () => {
     const response = await apiClient.get('/bi/kpis')
@@ -333,14 +337,16 @@ function BIDashboard() {
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => handleExportCsv(moduleName)}
-                disabled={exportingModule === moduleName.toLowerCase()}
-                className="inline-flex cursor-pointer items-center justify-center rounded-full border border-blue-200/80 bg-blue-100/85 px-6 py-2.5 text-sm font-semibold text-blue-950 backdrop-blur-md transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-200/85 hover:shadow-md"
-              >
-                {exportingModule === moduleName.toLowerCase() ? 'Exporting...' : 'Export CSV'}
-              </button>
+              {canManageBi ? (
+                <button
+                  type="button"
+                  onClick={() => handleExportCsv(moduleName)}
+                  disabled={exportingModule === moduleName.toLowerCase()}
+                  className="inline-flex cursor-pointer items-center justify-center rounded-full border border-blue-200/80 bg-blue-100/85 px-6 py-2.5 text-sm font-semibold text-blue-950 backdrop-blur-md transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-200/85 hover:shadow-md"
+                >
+                  {exportingModule === moduleName.toLowerCase() ? 'Exporting...' : 'Export CSV'}
+                </button>
+              ) : null}
             </div>
           ))}
         </div>

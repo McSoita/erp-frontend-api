@@ -3,6 +3,8 @@ import apiClient from '../api/client'
 import EditWarehouseModal from '../components/EditWarehouseModal'
 import GeneratePOModal from '../components/GeneratePOModal'
 import NewWarehouseModal from '../components/NewWarehouseModal'
+import { useAuth } from '../context/AuthContext'
+import { canWrite } from '../utils/permissions'
 
 const inventoryTabs = [
   { id: 'alerts', label: 'Reorder Alerts' },
@@ -34,6 +36,7 @@ function getManagerName(warehouse) {
 }
 
 function InventoryDashboard() {
+  const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('alerts')
   const [alerts, setAlerts] = useState([])
   const [warehouses, setWarehouses] = useState([])
@@ -47,6 +50,7 @@ function InventoryDashboard() {
   const [isEditWarehouseModalOpen, setIsEditWarehouseModalOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const canManageInventory = canWrite(user, 'Inventory')
 
   const fetchAlerts = useCallback(async () => {
     const response = await apiClient.get('/inventory/alerts')
@@ -301,16 +305,18 @@ function InventoryDashboard() {
                       {alert.optimal_reorder_quantity ?? 'N/A'}
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedAlert(alert)
-                          setIsGeneratePOModalOpen(true)
-                        }}
-                        className="inline-flex items-center justify-center rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-                      >
-                        Generate PO
-                      </button>
+                      {canManageInventory ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedAlert(alert)
+                            setIsGeneratePOModalOpen(true)
+                          }}
+                          className="inline-flex items-center justify-center rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+                        >
+                          Generate PO
+                        </button>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
@@ -361,13 +367,15 @@ function InventoryDashboard() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsNewWarehouseModalOpen(true)}
-            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-          >
-            New Warehouse
-          </button>
+          {canManageInventory ? (
+            <button
+              type="button"
+              onClick={() => setIsNewWarehouseModalOpen(true)}
+              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+            >
+              New Warehouse
+            </button>
+          ) : null}
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
@@ -401,16 +409,18 @@ function InventoryDashboard() {
               </div>
 
               <div className="mt-6">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedWarehouse(warehouse)
-                    setIsEditWarehouseModalOpen(true)
-                  }}
-                  className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-5 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                >
-                  Edit Warehouse
-                </button>
+                {canManageInventory ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedWarehouse(warehouse)
+                      setIsEditWarehouseModalOpen(true)
+                    }}
+                    className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-5 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                  >
+                    Edit Warehouse
+                  </button>
+                ) : null}
               </div>
             </div>
           ))}

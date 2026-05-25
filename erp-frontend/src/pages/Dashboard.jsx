@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import apiClient from '../api/client'
 import { useAuth } from '../context/AuthContext'
+import { resolveUserRole } from '../utils/permissions'
 import {
   Bar,
   BarChart,
@@ -852,7 +853,7 @@ function Dashboard() {
     )
   }
 
-  if (Number(user?.role_id) === 1) {
+  if (resolveUserRole(user) === 'Admin') {
     return renderAdminDashboard()
   }
 

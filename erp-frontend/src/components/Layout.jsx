@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { hasModuleAccess } from '../utils/permissions'
 
 function getNavLinkClassName({ isActive }) {
   const baseClasses =
@@ -15,7 +16,13 @@ function getNavLinkClassName({ isActive }) {
 function Layout() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
-  const isSuperAdmin = Number(user?.role_id) === 1
+  const canAccessFinance = hasModuleAccess(user, 'Finance')
+  const canAccessBi = hasModuleAccess(user, 'BI')
+  const canAccessCrm = hasModuleAccess(user, 'CRM')
+  const canAccessInventory = hasModuleAccess(user, 'Inventory')
+  const canAccessScm = hasModuleAccess(user, 'SCM')
+  const canAccessSales = hasModuleAccess(user, 'Sales Orders')
+  const canAccessHr = hasModuleAccess(user, 'HR')
 
   const displayName = user?.name ?? user?.username ?? 'ERP User'
 
@@ -42,29 +49,37 @@ function Layout() {
               <NavLink to="/" end className={getNavLinkClassName}>
                 Dashboard
               </NavLink>
-              {isSuperAdmin ? (
+              {canAccessFinance ? (
                 <NavLink to="/finance" className={getNavLinkClassName}>
                   Finance
                 </NavLink>
               ) : null}
-              {isSuperAdmin ? (
+              {canAccessBi ? (
                 <NavLink to="/bi" className={getNavLinkClassName}>
                   BI
                 </NavLink>
               ) : null}
-              <NavLink to="/crm" className={getNavLinkClassName}>
-                CRM
-              </NavLink>
-              <NavLink to="/inventory" className={getNavLinkClassName}>
-                Inventory
-              </NavLink>
-              <NavLink to="/scm" className={getNavLinkClassName}>
-                SCM
-              </NavLink>
-              <NavLink to="/sales" className={getNavLinkClassName}>
-                Sales Orders
-              </NavLink>
-              {isSuperAdmin ? (
+              {canAccessCrm ? (
+                <NavLink to="/crm" className={getNavLinkClassName}>
+                  CRM
+                </NavLink>
+              ) : null}
+              {canAccessInventory ? (
+                <NavLink to="/inventory" className={getNavLinkClassName}>
+                  Inventory
+                </NavLink>
+              ) : null}
+              {canAccessScm ? (
+                <NavLink to="/scm" className={getNavLinkClassName}>
+                  SCM
+                </NavLink>
+              ) : null}
+              {canAccessSales ? (
+                <NavLink to="/sales" className={getNavLinkClassName}>
+                  Sales Orders
+                </NavLink>
+              ) : null}
+              {canAccessHr ? (
                 <NavLink to="/hr" className={getNavLinkClassName}>
                   HR
                 </NavLink>

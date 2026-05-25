@@ -3,6 +3,8 @@ import apiClient from '../api/client'
 import CreateOrderModal from '../components/CreateOrderModal'
 import SalesOrderDetailsModal from '../components/SalesOrderDetailsModal'
 import UpdateSalesOrderStatusModal from '../components/UpdateSalesOrderStatusModal'
+import { useAuth } from '../context/AuthContext'
+import { canWrite } from '../utils/permissions'
 
 function formatOrderDate(value) {
   if (!value) {
@@ -55,12 +57,14 @@ async function fetchOrders() {
 }
 
 function SalesDashboard() {
+  const { user } = useAuth()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState(null)
+  const canManageSales = canWrite(user, 'Sales Orders')
 
   const loadOrders = useCallback(async () => {
     setLoading(true)
@@ -125,13 +129,15 @@ function SalesDashboard() {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-        >
-          Create Order
-        </button>
+        {canManageSales ? (
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+          >
+            Create Order
+          </button>
+        ) : null}
       </div>
 
       <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
@@ -209,16 +215,18 @@ function SalesDashboard() {
                       >
                         View Details
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedOrder(order)
-                          setIsStatusModalOpen(true)
-                        }}
-                        className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-                      >
-                        Update Status
-                      </button>
+                      {canManageSales ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedOrder(order)
+                            setIsStatusModalOpen(true)
+                          }}
+                          className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+                        >
+                          Update Status
+                        </button>
+                      ) : null}
                     </div>
                   </td>
                 </tr>

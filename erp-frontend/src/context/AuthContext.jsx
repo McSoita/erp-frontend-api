@@ -1,9 +1,27 @@
 import { createContext, useContext, useState } from 'react'
+import { resolveUserRole } from '../utils/permissions'
 
 const AuthContext = createContext(null)
 
 const TOKEN_STORAGE_KEY = 'token'
 const USER_STORAGE_KEY = 'user'
+
+function hydrateUser(user) {
+  if (!user) {
+    return null
+  }
+
+  const resolvedRole = resolveUserRole(user)
+
+  if (!resolvedRole) {
+    return user
+  }
+
+  return {
+    ...user,
+    role: resolvedRole,
+  }
+}
 
 function getStoredUser() {
   const token = localStorage.getItem(TOKEN_STORAGE_KEY)
@@ -15,13 +33,13 @@ function getStoredUser() {
   const storedUser = localStorage.getItem(USER_STORAGE_KEY)
 
   if (!storedUser) {
-    return { token }
+    return hydrateUser({ token })
   }
 
   try {
-    return JSON.parse(storedUser)
+    return hydrateUser(JSON.parse(storedUser))
   } catch {
-    return { token }
+    return hydrateUser({ token })
   }
 }
 
@@ -29,7 +47,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => getStoredUser())
 
   const login = (token, userData) => {
-    const nextUser = userData ?? { token }
+    const nextUser = hydrateUser(userData ?? { token })
 
     localStorage.setItem(TOKEN_STORAGE_KEY, token)
     localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(nextUser))

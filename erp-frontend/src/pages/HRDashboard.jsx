@@ -13,6 +13,8 @@ import UpdateApplicantStageModal from '../components/UpdateApplicantStageModal'
 import UpdateEmployeeStatusModal from '../components/UpdateEmployeeStatusModal'
 import UpdateJobStatusModal from '../components/UpdateJobStatusModal'
 import UpdateTrainingStatusModal from '../components/UpdateTrainingStatusModal'
+import { useAuth } from '../context/AuthContext'
+import { canWrite } from '../utils/permissions'
 
 const hrTabs = [
   { id: 'directory', label: 'Employee Directory' },
@@ -98,6 +100,7 @@ function getApplicantName(record) {
 }
 
 function HRDashboard() {
+  const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('directory')
   const [employees, setEmployees] = useState([])
   const [leaveRequests, setLeaveRequests] = useState([])
@@ -126,6 +129,7 @@ function HRDashboard() {
   const [selectedJob, setSelectedJob] = useState(null)
   const [selectedApplicant, setSelectedApplicant] = useState(null)
   const [selectedTraining, setSelectedTraining] = useState(null)
+  const canManageHr = canWrite(user, 'HR')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -407,13 +411,15 @@ function HRDashboard() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-          >
-            Register Employee
-          </button>
+          {canManageHr ? (
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(true)}
+              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+            >
+              Register Employee
+            </button>
+          ) : null}
         </div>
 
         <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
@@ -476,16 +482,18 @@ function HRDashboard() {
                       </span>
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedEmployee(employee)
-                          setIsEmployeeStatusModalOpen(true)
-                        }}
-                        className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                      >
-                        Manage Access
-                      </button>
+                      {canManageHr ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedEmployee(employee)
+                            setIsEmployeeStatusModalOpen(true)
+                          }}
+                          className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                        >
+                          Manage Access
+                        </button>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
@@ -579,16 +587,18 @@ function HRDashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedLeaveRequest(request)
-                          setIsLeaveReviewModalOpen(true)
-                        }}
-                        className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                      >
-                        Review Request
-                      </button>
+                      {canManageHr ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedLeaveRequest(request)
+                            setIsLeaveReviewModalOpen(true)
+                          }}
+                          className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                        >
+                          Review Request
+                        </button>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
@@ -646,13 +656,15 @@ function HRDashboard() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsPayrollModalOpen(true)}
-            className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-          >
-            Run New Payroll
-          </button>
+          {canManageHr ? (
+            <button
+              type="button"
+              onClick={() => setIsPayrollModalOpen(true)}
+              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+            >
+              Run New Payroll
+            </button>
+          ) : null}
         </div>
 
         <div className="grid gap-6 lg:grid-cols-3">
@@ -725,16 +737,18 @@ function HRDashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedPayrollRun(run)
-                          setIsPayrollStatusModalOpen(true)
-                        }}
-                        className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                      >
-                        Update Status
-                      </button>
+                      {canManageHr ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedPayrollRun(run)
+                            setIsPayrollStatusModalOpen(true)
+                          }}
+                          className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                        >
+                          Update Status
+                        </button>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
@@ -786,13 +800,15 @@ function HRDashboard() {
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setIsAppraisalModalOpen(true)}
-              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-            >
-              New Appraisal
-            </button>
+            {canManageHr ? (
+              <button
+                type="button"
+                onClick={() => setIsAppraisalModalOpen(true)}
+                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+              >
+                New Appraisal
+              </button>
+            ) : null}
           </div>
         </div>
 
@@ -842,16 +858,18 @@ function HRDashboard() {
                       {review.comments ?? 'No comments provided'}
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedReview(review)
-                          setIsReviewEditModalOpen(true)
-                        }}
-                        className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                      >
-                        Edit Review
-                      </button>
+                      {canManageHr ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedReview(review)
+                            setIsReviewEditModalOpen(true)
+                          }}
+                          className="cursor-pointer rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                        >
+                          Edit Review
+                        </button>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
@@ -913,13 +931,15 @@ function HRDashboard() {
                 </h3>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setIsJobModalOpen(true)}
-                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-              >
-                New Requisition
-              </button>
+              {canManageHr ? (
+                <button
+                  type="button"
+                  onClick={() => setIsJobModalOpen(true)}
+                  className="inline-flex items-center justify-center rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+                >
+                  New Requisition
+                </button>
+              ) : null}
             </div>
 
             <div className="mt-6 space-y-4">
@@ -949,16 +969,18 @@ function HRDashboard() {
                       >
                         {job.status ?? 'Unknown'}
                       </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedJob(job)
-                          setIsJobStatusModalOpen(true)
-                        }}
-                        className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                      >
-                        Update Status
-                      </button>
+                      {canManageHr ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedJob(job)
+                            setIsJobStatusModalOpen(true)
+                          }}
+                          className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                        >
+                          Update Status
+                        </button>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -983,13 +1005,15 @@ function HRDashboard() {
                 </h3>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setIsApplicantModalOpen(true)}
-                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-              >
-                Add Applicant
-              </button>
+              {canManageHr ? (
+                <button
+                  type="button"
+                  onClick={() => setIsApplicantModalOpen(true)}
+                  className="inline-flex items-center justify-center rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+                >
+                  Add Applicant
+                </button>
+              ) : null}
             </div>
 
             <div className="mt-6 space-y-4">
@@ -1018,16 +1042,18 @@ function HRDashboard() {
                   </div>
 
                   <div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedApplicant(applicant)
-                        setIsApplicantStageModalOpen(true)
-                      }}
-                      className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                    >
-                      Update Stage
-                    </button>
+                    {canManageHr ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedApplicant(applicant)
+                          setIsApplicantStageModalOpen(true)
+                        }}
+                        className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                      >
+                        Update Stage
+                      </button>
+                    ) : null}
                   </div>
                 </div>
               ))}
@@ -1052,13 +1078,15 @@ function HRDashboard() {
               </h3>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setIsTrainingModalOpen(true)}
-              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
-            >
-              Schedule Training
-            </button>
+            {canManageHr ? (
+              <button
+                type="button"
+                onClick={() => setIsTrainingModalOpen(true)}
+                className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-blue-700"
+              >
+                Schedule Training
+              </button>
+            ) : null}
           </div>
 
           <div className="overflow-x-auto">
@@ -1104,16 +1132,18 @@ function HRDashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedTraining(training)
-                          setIsTrainingStatusModalOpen(true)
-                        }}
-                        className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
-                      >
-                        Update Status
-                      </button>
+                      {canManageHr ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedTraining(training)
+                            setIsTrainingStatusModalOpen(true)
+                          }}
+                          className="inline-flex cursor-pointer items-center justify-center rounded-full border border-white/60 bg-slate-100/70 px-4 py-2 font-semibold text-slate-700 backdrop-blur-md shadow-[inset_1px_1px_0_rgba(255,255,255,0.92),0_10px_24px_rgba(15,23,42,0.06)] transition-all duration-300 ease-in-out hover:-translate-y-1 hover:bg-blue-100/80 hover:text-slate-900 hover:shadow-md"
+                        >
+                          Update Status
+                        </button>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
