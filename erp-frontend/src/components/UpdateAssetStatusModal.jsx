@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import apiClient from '../api/client'
+import { assetStatuses } from '../constants/assetOptions'
 
-const assetStatuses = ['Operational', 'Degraded', 'Under Repair', 'Decommissioned']
 const fieldClassName =
   'w-full rounded-2xl border border-transparent bg-slate-50 px-4 py-3 text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200'
 const subtleButtonClassName =

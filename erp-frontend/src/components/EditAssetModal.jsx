@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import apiClient from '../api/client'
+import { assetCategories, assetStatuses } from '../constants/assetOptions'
 
-const assetStatuses = ['Operational', 'Degraded', 'Under Repair', 'Decommissioned']
 const fieldClassName =
   'w-full rounded-2xl border border-transparent bg-slate-50 px-4 py-3 text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200'
 const subtleButtonClassName =
@@ -115,14 +115,23 @@ function EditAssetModal({ isOpen, onClose, onSuccess, asset }) {
               <label htmlFor="category" className="mb-2 block text-sm font-medium text-slate-700">
                 Category
               </label>
-              <input
+              <select
                 id="category"
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
                 required
                 className={fieldClassName}
-              />
+              >
+                <option value="" disabled>
+                  Select a category
+                </option>
+                {assetCategories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label htmlFor="purchaseDate" className="mb-2 block text-sm font-medium text-slate-700">
