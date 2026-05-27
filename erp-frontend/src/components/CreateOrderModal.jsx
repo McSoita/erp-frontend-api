@@ -39,30 +39,25 @@ function CreateOrderModal({ isOpen, onClose, onSuccess }) {
     ])
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     setSubmitting(true)
     setError('')
 
     const payload = {
-  // Wrap the existing variable in parseInt
-  customer_id: parseInt(customerId, 10), 
-  
-  // Map over the existing orderLines to cast the strings to numbers
-  order_lines: orderLines.map(line => ({
-    product_id: parseInt(line.product_id, 10),
-    quantity: parseInt(line.quantity, 10),
-    unit_price: parseFloat(line.unit_price)
-  }))
-};
+      customer_id: parseInt(customerId, 10),
+      order_lines: orderLines.map((line) => ({
+        product_id: parseInt(line.product_id, 10),
+        quantity: parseInt(line.quantity, 10),
+        unit_price: parseFloat(line.unit_price),
+      })),
+    }
 
-  try {
-      await apiClient.post('/sales', payload);
-      if (onSuccess) onSuccess();
-      if (onClose) onClose();
-    } catch (error) {
-      console.error("Submission failed:", error);
-    }try catch (requestError) {
+    try {
+      await apiClient.post('/sales', payload)
+      await onSuccess?.()
+      onClose?.()
+    } catch (requestError) {
       const message =
         requestError.response?.data?.message ??
         requestError.response?.data?.error ??
@@ -73,10 +68,6 @@ function CreateOrderModal({ isOpen, onClose, onSuccess }) {
       setSubmitting(false)
     }
   }
-  };
-
-    
-  
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-8">
