@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
 import apiClient from '../api/client'
+import {
+  calculatePurchaseOrderLineTotal,
+  getProductUnitCost,
+} from '../utils/purchaseOrders'
 
 const fieldClassName =
   'w-full rounded-2xl border border-transparent bg-slate-50 px-4 py-3 text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200'
@@ -9,10 +13,12 @@ const primaryButtonClassName =
   'rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-blue-500/30 transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60'
 
 function createDefaultLine(products) {
+  const defaultProduct = products[0]
+
   return {
-    product_id: products[0]?.id ? String(products[0].id) : '',
+    product_id: defaultProduct?.id ? String(defaultProduct.id) : '',
     quantity_ordered: 1,
-    unit_cost: 0,
+    unit_cost: getProductUnitCost(defaultProduct),
   }
 }
 
@@ -60,14 +66,7 @@ function NewPOModal({ isOpen, onClose, onSuccess, suppliers, products }) {
   }
 
   const orderTotal = formData.lines.reduce((sum, line) => {
-    const quantityOrdered = Number(line.quantity_ordered ?? 0)
-    const unitCost = Number(line.unit_cost ?? 0)
-
-    if (!Number.isFinite(quantityOrdered) || !Number.isFinite(unitCost)) {
-      return sum
-    }
-
-    return sum + quantityOrdered * unitCost
+    return sum + calculatePurchaseOrderLineTotal(line.quantity_ordered, line.unit_cost)
   }, 0)
 
   const handleFieldChange = (event) => {
@@ -86,7 +85,16 @@ function NewPOModal({ isOpen, onClose, onSuccess, suppliers, products }) {
         lineIndex === index
           ? {
               ...line,
-              [field]: value,
+              ...(field === 'product_id'
+                ? {
+                    product_id: value,
+                    unit_cost: getProductUnitCost(
+                      products.find((product) => String(product.id) === String(value)),
+                    ),
+                  }
+                : {
+                    [field]: value,
+                  }),
             }
           : line,
       ),
@@ -270,6 +278,9 @@ function NewPOModal({ isOpen, onClose, onSuccess, suppliers, products }) {
                 Unit Cost
               </div>
               <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                Line Total
+              </div>
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                 Action
               </div>
             </div>
@@ -278,7 +289,7 @@ function NewPOModal({ isOpen, onClose, onSuccess, suppliers, products }) {
               {formData.lines.map((line, index) => (
                 <div
                   key={`po-line-${index}`}
-                  className="grid gap-3 rounded-3xl bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.05)] md:grid-cols-[2fr_1fr_1fr_auto]"
+                  className="grid gap-3 rounded-3xl bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.05)] md:grid-cols-[2fr_1fr_1fr_1fr_auto]"
                 >
                   <select
                     value={line.product_id}
@@ -323,6 +334,15 @@ function NewPOModal({ isOpen, onClose, onSuccess, suppliers, products }) {
                     required
                     className={fieldClassName}
                   />
+
+                  <div className="flex items-center rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700">
+                    {formatCurrency(
+                      calculatePurchaseOrderLineTotal(
+                        line.quantity_ordered,
+                        line.unit_cost,
+                      ),
+                    )}
+                  </div>
 
                   <button
                     type="button"

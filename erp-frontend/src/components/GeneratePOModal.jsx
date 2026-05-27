@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
 import apiClient from '../api/client'
+import {
+  calculatePurchaseOrderLineTotal,
+  getProductUnitCost,
+} from '../utils/purchaseOrders'
 
 const fieldClassName =
   'w-full rounded-2xl border border-transparent bg-slate-50 px-4 py-3 text-slate-900 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-200'
@@ -7,6 +11,19 @@ const subtleButtonClassName =
   'rounded-full bg-slate-100 px-5 py-3 text-sm font-medium text-slate-600 transition-all hover:bg-slate-200 hover:text-slate-800'
 const primaryButtonClassName =
   'rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-blue-500/30 transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60'
+
+function formatCurrency(value) {
+  const amount = Number(value)
+
+  if (!Number.isFinite(amount)) {
+    return '$0.00'
+  }
+
+  return new Intl.NumberFormat(undefined, {
+    style: 'currency',
+    currency: 'USD',
+  }).format(amount)
+}
 
 function GeneratePOModal({
   isOpen,
@@ -29,7 +46,7 @@ function GeneratePOModal({
 
     setSupplierId(suppliers[0]?.id ? String(suppliers[0].id) : '')
     setQuantity(Number(product.optimal_reorder_quantity ?? 1))
-    setUnitCost(0)
+    setUnitCost(getProductUnitCost(product))
     setExpectedDeliveryDate('')
     setSubmitting(false)
     setError('')
@@ -38,6 +55,8 @@ function GeneratePOModal({
   if (!isOpen || !product) {
     return null
   }
+
+  const orderTotal = calculatePurchaseOrderLineTotal(quantity, unitCost)
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -178,6 +197,15 @@ function GeneratePOModal({
               required
               className={fieldClassName}
             />
+          </div>
+
+          <div className="rounded-3xl bg-slate-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+              Order Total
+            </p>
+            <p className="mt-2 text-2xl font-bold tracking-tight text-slate-950">
+              {formatCurrency(orderTotal)}
+            </p>
           </div>
 
           <div>
